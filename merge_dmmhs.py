@@ -12,40 +12,35 @@ def merge_same_center_files(base_path, save_path):
     """
     file_groups = {}
 
-    # 🔍 Recursively collect CSV files grouped by filename
+    # Recursively collect CSV files grouped by filename
     for root, dirs, files in os.walk(base_path):
         for file_name in files:
             if file_name.endswith(".csv"):
                 file_path = os.path.join(root, file_name)
                 file_groups.setdefault(file_name, []).append(file_path)
 
-    # 📁 Ensure the save_path exists
+    # Ensure the save_path exists
     os.makedirs(save_path, exist_ok=True)
 
-    # 🔄 Merge files with the same name
+    # Merge files with the same name
     for file_name, file_paths in file_groups.items():
         merged_df = pd.DataFrame()
 
         for file_path in file_paths:
             try:
                 df = pd.read_csv(file_path, low_memory=False)
-                if "Unique_ID" in df.columns: #GH TODO: delete
-                    df = df.drop(columns=["Unique_ID"])
-
+                # if "Unique_ID" in df.columns: # TODO: Uncomment it, if we don't need Unique_ID
+                #     df = df.drop(columns=["Unique_ID"])
                 print(f">>> Read: {file_path}")
                 merged_df = pd.concat([merged_df, df], ignore_index=True)
             except Exception as e:
                 print(f"❌ Error reading {file_path}: {e}")
 
-        # 🧼 Clean column names
+        # Clean column names
         merged_df.columns = merged_df.columns.str.strip()
 
         # If possible, create Timestamp column and sort
         if all(col in merged_df.columns for col in ["Participant", "Interaction_Trigger_Date", "Interaction_Trigger_Time"]):
-            # merged_df["Timestamp"] = pd.to_datetime(
-            #     merged_df["Interaction_Trigger_Date"] + " " + merged_df["Interaction_Trigger_Time"],
-            #     errors="coerce"
-            # )
             timestamp_col = pd.to_datetime(
                 merged_df["Interaction_Trigger_Date"] + " " + merged_df["Interaction_Trigger_Time"],
                 errors="coerce"
@@ -59,7 +54,7 @@ def merge_same_center_files(base_path, save_path):
         else:
             print(f"❌ Skipped {file_name}: missing required columns.")
 
-        # 💾 Save the merged file
+        # Save the merged file
         output_file_path = os.path.join(save_path, f"merged_{file_name}")
         merged_df.to_csv(output_file_path, index=False, sep=";")
         print(f"✅ Merged file saved to: {output_file_path}")
@@ -93,7 +88,7 @@ def merge_all_data_across_centers(base_path, save_path, output_filename="merged_
 
     merged_df = pd.concat(all_dfs, ignore_index=True)
 
-    # 정렬 기준: Participant, Interaction_Counter, Timestamp가 있으면 기준으로 정렬
+    # Sort order: If available, sort by Participant, Interaction_Counter, and Timestamp
     sort_columns = [col for col in ["Participant", "Interaction_Counter", "Timestamp"] if col in merged_df.columns]
     if sort_columns:
         merged_df = merged_df.sort_values(by=sort_columns)

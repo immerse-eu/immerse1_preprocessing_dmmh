@@ -23,9 +23,9 @@ merge_dmmhs.merge_same_center_files(base_path_dmmh, save_path_merged_center)
 # (1) add base variable (SiteCode)
 base_variables.add_sitecode_from_filename(save_path_merged_center, save_path_baseVar)
 # (2) merge all dmmh data across centers (Only if it is needed. Too big!)
-merge_dmmhs.merge_all_data_across_centers(save_path_baseVar, save_path_merged_all)
+# merge_dmmhs.merge_all_data_across_centers(save_path_baseVar, save_path_merged_all)
 
-
+print("✅✅✅ ----- DMMH data is ready for the next process ----- ")
 
 
 
