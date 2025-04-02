@@ -1,5 +1,3 @@
-import pandas as pd
-import numpy as np
 import os
 import yaml
 import merge_dmmhs
@@ -14,7 +12,6 @@ with open("config.yaml", "r", encoding="utf-8") as f:
 base_path_dmmh = config['dmmhPath']['base_path']
 save_path_merged_center = config['dmmhPath']['save_path_merged_center']
 save_path_baseVar = config['dmmhPath']['save_path_baseVar']
-reference_file_path = os.path.join(config['maganamedPath']['base_path'], 'Kind-of-participant.csv')
 save_path_merged_all = config['dmmhPath']['save_path_merged_all']
 
 # Call the processing function
